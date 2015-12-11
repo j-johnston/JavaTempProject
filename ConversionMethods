@@ -1,0 +1,20 @@
+/**
+ * Program Name: ConversionMethods.java
+ * Purpose: interface class to force the implementation of abstract methods
+ * Coder: Jacob Johnston 0579965 Sec02
+ * Date: Apr 10, 2015
+ */
+
+public interface TempConversionMethods
+	{	
+		final double ABS_ZERO_K = 0;
+		final double ABS_ZERO_C = -273.15;
+		final double ABS_ZERO_F = -496.66999999996;
+		
+		public abstract double convertCtoF(double temp);
+		public abstract double convertCtoK(double temp);
+		public abstract double convertFtoC(double temp);
+		public abstract double convertFtoK(double temp);
+		public abstract double convertKtoC(double temp);
+		public abstract double convertKtoF(double temp);
+	}
