@@ -1,0 +1,292 @@
+/**
+ * Program Name: TempConverter_JJ.java
+ * Purpose: 
+ * Coder: Jacob Johnston 0579965 Sec02
+ * Date: Apr 7, 2015
+ */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.JOptionPane;
+public class TempConverter_JJ extends JFrame
+	{
+		//class wide scope variables
+		Container contentPane;
+		//menu variables
+		private JMenuBar menuBar = new JMenuBar();
+		
+		private JMenu colorMenu = new JMenu("Background Color");
+		private JMenu helpMenu = new JMenu("Help");
+		
+		private JMenuItem grayItem = new JMenuItem("LIGHT GRAY");
+		private JMenuItem blackItem = new JMenuItem("BLACK");
+		private JMenuItem blueItem = new JMenuItem("BLUE");
+		private JMenuItem orangeItem = new JMenuItem("ORANGE");
+		
+		private JMenuItem howItem = new JMenuItem("How to use");
+		private JMenuItem aboutItem = new JMenuItem("About this program");
+		//component variables
+		private JLabel cLabel, fLabel, kLabel;
+		private JTextField cText, fText, kText;
+		private JTextArea textArea;
+		private JComboBox comboBox;
+		private String[] intArray = {"0", "1", "2", "3", "4", "5", "6"};
+		
+		int select;
+		
+		//constructor
+		public TempConverter_JJ()
+		{
+			//super call
+			super("Jacob's Temperature Converter App");
+			
+			//boilerplate code
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setLayout(new GridLayout(3,3) );
+			this.setSize(500, 300);
+			this.setLocationRelativeTo(null);
+			
+			//add 3 labels, 3 JTextFields, 1 JTextArea, 1 JComboBox
+			cLabel = new JLabel("Celsius");
+			fLabel = new JLabel("Fahrenheit");
+			kLabel = new JLabel("Kelvin");
+			
+			cText = new JTextField(10);
+			fText = new JTextField(10);
+			kText = new JTextField(10);
+			
+			textArea = new JTextArea("Select number of decimals to display.\nTo round to nearest ten, enter -1:");
+			
+			comboBox = new JComboBox(intArray);
+			comboBox.setEditable(true);
+			
+			//register listeners
+			comboBox.addActionListener(new ComboBoxListener());
+			
+			grayItem.addActionListener(new MenuListener());
+			blackItem.addActionListener(new MenuListener());
+			blueItem.addActionListener(new MenuListener());
+			orangeItem.addActionListener(new MenuListener());
+			howItem.addActionListener(new MenuListener());
+			aboutItem.addActionListener(new MenuListener());
+			
+			cText.addKeyListener(new KeyListenerNanny());
+			fText.addKeyListener(new KeyListenerNanny());
+			kText.addKeyListener(new KeyListenerNanny());
+			
+			
+			
+			//add components
+			this.add(cLabel);
+			this.add(cText);
+			this.add(textArea);
+			this.add(fLabel);
+			this.add(fText);
+			this.add(comboBox);
+			this.add(kLabel);
+			this.add(kText);
+			
+			this.setJMenuBar(menuBar);
+			
+			menuBar.add(colorMenu);
+			menuBar.add(helpMenu);
+			
+			colorMenu.add(grayItem);
+			colorMenu.add(blackItem);
+			colorMenu.add(blueItem);
+			colorMenu.add(orangeItem);
+			
+			helpMenu.add(howItem);
+			helpMenu.add(aboutItem);
+			//last line
+			this.setVisible(true);
+		}
+		
+		private class MenuListener implements ActionListener
+		{
+			public void actionPerformed(ActionEvent ev)
+			{
+				contentPane = getContentPane();
+				
+				if(ev.getSource().equals(grayItem))
+					{
+						contentPane.setBackground(Color.LIGHT_GRAY);
+					}
+				else if(ev.getSource().equals(blackItem))
+					{
+						contentPane.setBackground(Color.BLACK);
+					}
+				else if(ev.getSource().equals(blueItem))
+					{
+						contentPane.setBackground(Color.BLUE);
+					}
+				else if(ev.getSource().equals(orangeItem))
+					{
+						contentPane.setBackground(Color.ORANGE);
+					}
+				else if(ev.getSource().equals(howItem))
+					{
+						JOptionPane.showMessageDialog(null, "Enter a temperature value in any field and select\n"
+													+ "number of decimal places to display from list.\n"
+													+ "Then hit the enter key to see the equivalent temperatures.");
+					}
+				else if(ev.getSource().equals(aboutItem))
+					{
+						JOptionPane.showMessageDialog(null, "TempConverter Version 6.66\nby Jacob Johnston\nApril 17 2015");
+					}
+			}
+		}
+		
+		private class ComboBoxListener implements ActionListener
+					{
+						public void actionPerformed(ActionEvent ev)
+						{
+							select = Integer.parseInt((String)comboBox.getSelectedItem());
+							
+							
+						}
+					}
+		
+		private class KeyListenerNanny implements KeyListener, TempConversionMethods
+		{
+			
+			@Override public void keyTyped(KeyEvent e)
+				{
+					
+				}
+
+			@Override public void keyPressed(KeyEvent e)
+				{
+					double c;
+					double f;
+					double k;
+					if(e.getKeyCode() == KeyEvent.VK_ENTER)
+						{
+							if(cText.isFocusOwner())
+								{
+									c = Double.parseDouble(cText.getText());
+									if (c < ABS_ZERO_C)
+										{
+											try
+												{
+													throw new InvalidTemperatureConverter(c);
+												}
+											catch (InvalidTemperatureConverter e1)
+												{
+													JOptionPane.showMessageDialog(null,  "InvalidTemperatureException: temperature of " + c + " is below absolute zero");
+												}
+										}
+									f = convertCtoF(c);
+									k = convertCtoK(c);
+									fText.setText("" + round(f, select) );
+									kText.setText("" + round(k, select) );
+								}
+							else if (fText.isFocusOwner())
+								{
+									f = Double.parseDouble(fText.getText());
+									if (f < ABS_ZERO_F)
+										{
+											try
+												{
+													throw new InvalidTemperatureConverter(f);
+												}
+											catch (InvalidTemperatureConverter e1)
+												{
+													JOptionPane.showMessageDialog(null,  "InvalidTemperatureException: temperature of " + f + " is below absolute zero");
+												}
+										}
+									else
+										{
+											c = convertFtoC(f);
+											k = convertFtoK(f);
+											cText.setText("" + round(c, select) );
+											kText.setText("" + round(k, select) );
+										}
+								}
+							else if (kText.isFocusOwner())
+								{
+									k = Double.parseDouble(kText.getText());
+									if (k < ABS_ZERO_K)
+										{
+											try
+												{
+													throw new InvalidTemperatureConverter(k);
+												}
+											catch (InvalidTemperatureConverter e1)
+												{
+													JOptionPane.showMessageDialog(null,  "InvalidTemperatureException: temperature of " + k + " is below absolute zero");
+												}
+										}
+									else 
+										{
+											c = convertKtoC(k);
+											f = convertKtoF(k);
+											cText.setText("" + round(c, select) );
+											fText.setText("" + round(f, select) );
+										}
+								}
+						}
+				}
+
+			@Override public void keyReleased(KeyEvent e)
+				{
+					
+					
+					
+				}
+
+			@Override public double convertCtoF(double temp)
+				{
+					return (double)9/5*temp+32;
+				}
+
+			@Override public double convertCtoK(double temp)
+				{
+					return temp + 273.15;
+				}
+
+			@Override public double convertFtoC(double temp)
+				{
+					return (double)5/9*(temp-32);
+				}
+
+			@Override public double convertFtoK(double temp)
+				{
+					return convertFtoC(temp) - 273.15;
+				}
+
+			@Override public double convertKtoC(double temp)
+				{
+					return temp - 273.15;
+				}
+
+			@Override public double convertKtoF(double temp)
+				{
+					return (double)9/5*convertKtoC(temp)+32;
+				}
+		}
+		
+		public double round(double temp, int places)
+		{
+			double place;
+			if (places < 0)
+				{
+					place = places * (-1);
+					for(int i = 0; i > places; --i)
+						{
+							place *= 0.1;
+						}
+				}
+			else
+				{
+					place = places;
+				}
+			return ((double)(Math.round(temp * Math.pow(10, place)))/Math.pow(10, place));
+		}
+		
+		public static void main(String[] args)
+			{
+				new TempConverter_JJ();
+			}
+		
+	}
