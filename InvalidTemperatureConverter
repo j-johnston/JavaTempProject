@@ -1,0 +1,19 @@
+/**
+ * Program Name: InvalidTemperatureConverter.java
+ * Purpose: 
+ * Coder: Jacob Johnston 0579965 Sec02
+ * Date: Apr 14, 2015
+ */
+
+public class InvalidTemperatureConverter extends Exception
+	{	
+		private static final long serialVersionUID = 1L;
+		
+		private double temp;
+		
+		public InvalidTemperatureConverter(double t)
+		{
+			super("Invalid temperature");
+			this.temp = t;
+		}
+	}
